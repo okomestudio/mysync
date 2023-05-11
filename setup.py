@@ -31,7 +31,7 @@ version = meta("version")
 readme = fread("README.rst")
 
 
-requires = []
+requires = ["watchdog==3.0.0"]
 
 setup_requires = ["pytest-runner>=5.2"]
 
@@ -65,9 +65,8 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Utilities",
     ],
     entry_points={"console_scripts": []},
@@ -79,7 +78,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages("src"),
     platforms=["Linux"],
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     scripts=[],
     setup_requires=setup_requires,
     tests_require=tests_require,
