@@ -110,12 +110,8 @@ class Synchronizer:
                 )
 
 
-<<<<<<< HEAD
-def validate_file(path: Path) -> None:
-    "Check if watched files are valid for sync."
-=======
 def _validate_file(path: Path) -> None:
->>>>>>> 4ec9d2e9a1424fb41c4b566f97a1fb3f4539f480
+    "Check if watched files are valid for sync."
     if not path.exists():
         raise OSError(f"File does not exist: {path}")
     if not (path.is_file() and not path.is_symlink()):
