@@ -1,13 +1,20 @@
 import re
 import sys
 import time
-from argparse import ArgumentParser
 from collections import namedtuple
+from importlib.metadata import version
 from pathlib import Path
-from subprocess import DEVNULL
-from subprocess import run
-from typing import List
-from typing import Optional
+from subprocess import DEVNULL, run
+from typing import List, Optional
+
+from watchdog.events import (
+    DirCreatedEvent,
+    DirModifiedEvent,
+    DirMovedEvent,
+    FileCreatedEvent,
+    FileModifiedEvent,
+    FileMovedEvent,
+)
 
 try:
     from watchdog.events import RegexMatchingEventHandler
@@ -23,22 +30,21 @@ def err(*args, **kwargs) -> None:
 
 
 class MyHandler(RegexMatchingEventHandler):
-    def __init__(self, path, *args, **kwargs):
+    """Handler for the file to watch."""
+
+    def __init__(self, path, *args, **kwargs) -> None:
         regexes = [r"^" + re.escape(str(path.absolute())) + r"$"]
         kwargs["regexes"] = regexes
         super().__init__(*args, **kwargs)
         self.path = path
 
-    def on_created(self, event):
-        err("CREATED", repr(event))
+    def on_created(self, event: DirCreatedEvent | FileCreatedEvent) -> None:
         self.synchronize(self)
 
-    def on_modified(self, event):
-        err("MODIFIED", repr(event))
+    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         self.synchronize(self)
 
-    def on_moved(self, event):
-        err("MOVED", repr(event), self.path.absolute())
+    def on_moved(self, event: DirMovedEvent | FileMovedEvent) -> None:
         if event.dest_path == str(self.path.absolute()):
             self.synchronize(self)
 
@@ -104,6 +110,7 @@ class Synchronizer:
 
 
 def validate_file(path: Path) -> None:
+    "Check if watched files are valid for sync."
     if not path.exists():
         raise IOError(f"File does not exist: {path.absolute()}")
     if not (path.is_file() and not path.is_symlink()):
@@ -123,13 +130,17 @@ def _prepare_link(observer: Observer, path1: Path, path2: Path) -> None:
     synchronizer.schedule_all()
 
 
-def _check_requirements() -> None:
+def check_requirements() -> None:
+    "Check required programs are available."
     result = run(["which", "unison"], stdout=DEVNULL, stderr=DEVNULL)
     if result.returncode != 0:
         raise RuntimeError("Install the unison command")
 
 
 def serve_forever(links: List[Link]) -> None:
+    "Start the service."
+    err(f"Starting mysync v{version('mysync')}...")
+
     observer = Observer()
 
     for link in links:

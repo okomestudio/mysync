@@ -1,19 +1,11 @@
 repos:
-  - repo: https://github.com/ambv/black
-    rev: stable
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.4
     hooks:
-      - id: black
-        # Specify generic python since a venv is assumed for development.
-        language_version: python
+      - id: ruff
+      - id: ruff-format
 
-  - repo: https://github.com/asottile/seed-isort-config
-    rev: v2.1.1
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
     hooks:
-      - id: seed-isort-config
-
-  - repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21
-    hooks:
-      - id: isort
-        language_version: python
-        additional_dependencies: [toml]
+      - id: mypy

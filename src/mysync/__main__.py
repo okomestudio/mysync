@@ -9,16 +9,15 @@ For example,
   $ mysync -l file1 file2 -l file3 file4
 
 """
+
 from argparse import ArgumentParser
 from pathlib import Path
 
-from .mysync import Link
-from .mysync import _check_requirements
-from .mysync import serve_forever
+from .mysync import Link, check_requirements, serve_forever
 
 
 def main() -> None:
-    _check_requirements()
+    check_requirements()
 
     p = ArgumentParser(description=__doc__)
     p.add_argument("--link", "-l", nargs=2, type=Path, action="append")
