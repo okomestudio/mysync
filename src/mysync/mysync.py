@@ -23,6 +23,7 @@ except ImportError:
     raise ImportError("The watchdog Python package is not available")
 
 Link = namedtuple("Link", ("source", "target"))
+"""Two files to be synced."""
 
 
 def err(*args, **kwargs) -> None:
@@ -109,18 +110,25 @@ class Synchronizer:
                 )
 
 
+<<<<<<< HEAD
 def validate_file(path: Path) -> None:
     "Check if watched files are valid for sync."
+=======
+def _validate_file(path: Path) -> None:
+>>>>>>> 4ec9d2e9a1424fb41c4b566f97a1fb3f4539f480
     if not path.exists():
-        raise IOError(f"File does not exist: {path.absolute()}")
+        raise OSError(f"File does not exist: {path}")
     if not (path.is_file() and not path.is_symlink()):
         raise IOError(f"Not valid files to watch: {path.absolute()}")
 
 
 def _prepare_link(observer: Observer, path1: Path, path2: Path) -> None:
-    paths = [path1, path2]
-    for path in paths:
-        validate_file(path)
+    try:
+        _validate_file(path1)
+        _validate_file(path2)
+    except Exception as exc:
+        err("Sync will not be established for the link: " + repr(exc))
+        return
 
     event_handler1 = MyHandler(path1)
     event_handler2 = MyHandler(path2)
